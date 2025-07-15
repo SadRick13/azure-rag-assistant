@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  jupyter:
+    build:
+      context: ./jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/workspace
+      - ./data:/workspace/data
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  airflow-webserver:
+    image: apache/airflow:2.9.1-python3.11
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__FERNET_KEY=yourfernetkey
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////root/airflow/airflow.db
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/requirements.txt:/requirements.txt
+    command: >
+      bash -c "pip install -r /requirements.txt && airflow db init && airflow webserver"
+    ports:
+      - "8080:8080"
+

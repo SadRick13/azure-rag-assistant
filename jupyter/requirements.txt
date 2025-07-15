@@ -1,0 +1,7 @@
+pandas
+requests
+tqdm
+python-dotenv
+azure-storage-blob
+openai
+arxiv

@@ -1,2 +1,5 @@
-# azure-rag-assistant
-RAG-powered assistant that finds and summarizes papers in the domain of AI, LLMs, Cloud etc.
+# Azure RAG Assistant
+
+This project builds a research assistant using Azure, Airflow, DBT, and OpenAI to summarize and search research papers.
+
+
