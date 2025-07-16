@@ -1,0 +1,6 @@
+apache-airflow==2.9.1
+arxiv
+pdfminer.six
+openai
+langchain
+azure-search-documents

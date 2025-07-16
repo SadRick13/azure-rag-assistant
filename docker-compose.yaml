@@ -1,28 +1,46 @@
 version: "3.9"
 
 services:
-  jupyter:
-    build:
-      context: ./jupyter
-    ports:
-      - "8888:8888"
-    volumes:
-      - ./notebooks:/workspace
-      - ./data:/workspace/data
-    environment:
-      - PYTHONUNBUFFERED=1
-
   airflow-webserver:
     image: apache/airflow:2.9.1-python3.11
     environment:
       - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
-      - AIRFLOW__CORE__FERNET_KEY=yourfernetkey
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////root/airflow/airflow.db
+      - AIRFLOW__CORE__FERNET_KEY=NKKUvZLM0UGLBUsBZ7rm-3eQYxi98gkWPi2Fi6CAaKE=
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
     volumes:
+      - airflow_data:/opt/airflow
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/requirements.txt:/requirements.txt
     command: >
-      bash -c "pip install -r /requirements.txt && airflow db init && airflow webserver"
+      bash -c "
+        pip install -r /requirements.txt &&
+        airflow db init &&
+        airflow webserver
+      "
     ports:
       - "8080:8080"
+    env_file:
+      - .env
 
+  airflow-scheduler:
+    image: apache/airflow:2.9.1-python3.11
+    depends_on:
+      - airflow-webserver
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__FERNET_KEY=somefernetkeyhere
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+    volumes:
+      - airflow_data:/opt/airflow
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/requirements.txt:/requirements.txt
+    command: >
+      bash -c "
+        pip install -r /requirements.txt &&
+        airflow scheduler
+      "
+    env_file:
+      - .env
+
+volumes:
+  airflow_data:
